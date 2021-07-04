@@ -1,1 +1,1 @@
-# equipanelec
+#Proyecto Equipanelec
