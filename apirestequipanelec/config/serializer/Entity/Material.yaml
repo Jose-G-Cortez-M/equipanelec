@@ -4,3 +4,5 @@ App\Entity\Material:
             groups: ['material']
         nombre:
             groups: ['material']
+        imagen:
+            groups: ['material']

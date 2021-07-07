@@ -4,12 +4,14 @@
 namespace App\Controller\Api;
 
 use App\Entity\Material;
+use App\Form\Model\MaterialDto;
 use App\Form\Type\MaterialFormType;
 use App\Repository\MaterialRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Request;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use League\Flysystem\FilesystemOperator;
 
 class MaterialController extends AbstractFOSRestController
 {
@@ -29,12 +31,20 @@ class MaterialController extends AbstractFOSRestController
      */
     public function postAction(
         EntityManagerInterface $em,
-        Request $request
+        Request $request,
+        FilesystemOperator $defaultStorage
     ) {
-        $material = new Material();
-        $form = $this->createForm(MaterialFormType::class, $material);
+        $materialDto = new MaterialDto();
+        $form = $this->createForm(MaterialFormType::class, $materialDto);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $extension = explode('/', mime_content_type($materialDto->base64Imagen))[1];
+            $data = explode(',', $materialDto->base64Imagen);
+            $filename = sprintf('%s.%s', uniqid('material_', true), $extension);
+            $defaultStorage->write($filename, base64_decode($data[1]));
+            $material = new Material();
+            $material->setNombre($materialDto->nombre);
+            $material->setImagen($filename);
             $em->persist($material);
             $em->flush();
             return $material;
