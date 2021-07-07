@@ -2,7 +2,8 @@
 
 namespace App\Entity;
 
-use App\Repository\MaterialRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +27,16 @@ class Material
      * @ORM\Column(type="string", length=512, nullable=true)
      */
     private $imagen;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Movimiento::class, inversedBy="materials")
+     */
+    private $movimientos;
+
+    public function __construct()
+    {
+        $this->movimientos = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -52,6 +63,30 @@ class Material
     public function setImagen(?string $imagen): self
     {
         $this->imagen = $imagen;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Movimiento[]
+     */
+    public function getMovimientos(): Collection
+    {
+        return $this->movimientos;
+    }
+
+    public function addMovimiento(Movimiento $movimiento): self
+    {
+        if (!$this->movimientos->contains($movimiento)) {
+            $this->movimientos[] = $movimiento;
+        }
+
+        return $this;
+    }
+
+    public function removeMovimiento(Movimiento $movimiento): self
+    {
+        $this->movimientos->removeElement($movimiento);
 
         return $this;
     }

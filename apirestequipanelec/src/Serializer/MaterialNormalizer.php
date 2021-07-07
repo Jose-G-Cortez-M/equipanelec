@@ -26,7 +26,7 @@ class MaterialNormalizer implements ContextAwareNormalizerInterface
         $data = $this->normalizer->normalize($material, $format, $context);
 
         if (!empty($material->getImagen())) {
-            $data['image'] = $this->urlHelper->getAbsoluteUrl('/storage/default/' . $material->getImagen());
+            $data['imagen'] = $this->urlHelper->getAbsoluteUrl('/storage/default/' . $material->getImagen());
         }
     
         return $data;
