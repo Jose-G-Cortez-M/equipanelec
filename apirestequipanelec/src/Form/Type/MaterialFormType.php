@@ -22,6 +22,8 @@ class MaterialFormType extends AbstractType
             'data_class' => Material::class,
         ]);
     }
+
+    //funciones para no especificar el formulario dentro de el json
     public function getBlockPrefix()
     {
         return '';
