@@ -32,9 +32,13 @@ class MaterialController extends AbstractFOSRestController
         Request $request
     ) {
         $material = new Material();
-        $material->setNombre('tuercas');
-        $em->persist($material);
-        $em->flush();
-        return $material;
+        $form = $this->createForm(MaterialFormType::class, $material);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($material);
+            $em->flush();
+            return $material;
+        }
+        return $form;
     }
 }
