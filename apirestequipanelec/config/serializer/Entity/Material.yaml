@@ -6,3 +6,5 @@ App\Entity\Material:
             groups: ['material']
         imagen:
             groups: ['material']
+        movimientos:
+            groups: ['material']

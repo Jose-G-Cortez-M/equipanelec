@@ -12,7 +12,7 @@ class MovimientoDto {
     {
         $dto = new self();
         $dto->id = $movimiento->getId();
-        $dto->name = $movimiento->getNombre();
+        $dto->nombre = $movimiento->getNombre();
         return $dto;
     }
 

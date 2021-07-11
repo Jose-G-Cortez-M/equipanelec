@@ -76,12 +76,11 @@ class MaterialController extends AbstractFOSRestController
         if (!$material) {
             throw $this->createNotFoundException('Material not found');
         }
+
         $materialDto = MaterialDto::createFromMaterial($material);
-
         $originalMovimientos = new ArrayCollection();
-        foreach ($material->getMovimientos() as $movimiento) {
-            
 
+        foreach ($material->getMovimientos() as $movimiento) {
             $movimientoDto = MovimientoDto::createFromMovimiento($movimiento);
             $materialDto->movimientos[] = $movimientoDto;
             $originalMovimientos->add($movimientoDto);
@@ -107,7 +106,7 @@ class MaterialController extends AbstractFOSRestController
                     $movimiento = $movimientoRepository->find($newMovimientoDto->id ?? 0);
                     if (!$movimiento) {
                         $movimiento = new Movimiento();
-                        $movimiento->setNombre($newMovimientoDto->name);
+                        $movimiento->setNombre($newMovimientoDto->nombre);
                         $em->persist($movimiento);
                     }
                     $material->addMovimiento($movimiento);
