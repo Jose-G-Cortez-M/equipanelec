@@ -6,7 +6,6 @@ namespace App\Controller\Api;
 
 use FOS\RestBundle\View\View;
 use App\Service\MaterialManager;
-use App\Repository\MaterialRepository;
 use App\Service\MaterialFormProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +23,20 @@ class MaterialController extends AbstractFOSRestController
         MaterialManager $materialManager
     ) {
         return $materialManager->getRepository()->findAll();
+    }
+    /**
+     * @Rest\Get(path="/material/{$id}", requirements={"id"="\d+"})
+     * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
+     */
+    public function getSingleAction(
+        int $id,
+        MaterialManager $materialManager
+    ) {
+        $material = $materialManager->find($id);
+        if(!$material){
+            return View::create('Material no Encontrado', Response::HTTP_BAD_REQUEST);
+        }
+        return $material;
     }
 
     /**
@@ -43,7 +56,7 @@ class MaterialController extends AbstractFOSRestController
     }
     
     /**
-     * @Rest\Post(path="/material/{id}")
+     * @Rest\Post(path="/material/{id}", requirements={"id"="\d+"})
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function editAction(
@@ -63,7 +76,7 @@ class MaterialController extends AbstractFOSRestController
 
     }
     /**
-     * @Rest\Delete(path="/material/{id}")
+     * @Rest\Delete(path="/material/{id}", requirements={"id"="\d+"})
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function deleteAction(
