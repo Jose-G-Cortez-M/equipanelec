@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Form\Model\MovimientoDto;
 use App\Service\MovimientoManager;
+use App\Form\Type\MovimientoFormType;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -20,8 +21,8 @@ class MovimientoController extends AbstractFOSRestController
         return $movimientoManager->getRepository()->findAll();
     }
        /**
-     * @Rest\Post(path="/categories")
-     * @Rest\View(serializerGroups={"book"}, serializerEnableMaxDepthChecks=true)
+     * @Rest\Post(path="/movimientos")
+     * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function postAction(
         Request $request,
