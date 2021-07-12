@@ -3,18 +3,13 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Material;
-use App\Entity\Movimiento;
-use App\Service\FileUploader;
-use App\Form\Model\MaterialDto;
-use App\Form\Model\MovimientoDto;
-use App\Form\Type\MaterialFormType;
+
+use FOS\RestBundle\View\View;
+use App\Service\MaterialManager;
 use App\Repository\MaterialRepository;
-use App\Repository\MovimientoRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\MaterialFormProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 
@@ -26,9 +21,9 @@ class MaterialController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function getAction(
-        MaterialRepository $materialRepository
+        MaterialManager $materialManager
     ) {
-        return $materialRepository->findAll();
+        return $materialManager->getRepository()->findAll();
     }
 
     /**
@@ -36,28 +31,15 @@ class MaterialController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function postAction(
-        EntityManagerInterface $em,
-        Request $request,
-        FileUploader $fileUploader
+        MaterialManager $materialManager,
+        MaterialFormProcessor $materialFormProcessor,
+        Request $request
     ) {
-        $materialDto = new MaterialDto();
-        $form = $this->createForm(MaterialFormType::class, $materialDto);
-        $form->handleRequest($request);
-        if (!$form->isSubmitted()) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
-        if ($form->isValid()) {
-            $material = new Material();
-            $material->setNombre($materialDto->nombre);
-            if ($materialDto->base64Imagen) {
-                $filename = $fileUploader->uploadBase64File($materialDto->base64Imagen);
-                $material->setImagen($filename);
-            }
-            $em->persist($material);
-            $em->flush();
-            return $material;
-        }
-        return $form;
+        $material = $materialManager->create();
+        [$material, $error] = ($materialFormProcessor)($material, $request);
+        $statusCode = $material ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
+        $data = $material ?? $error;
+        return View::create($data, $statusCode);
     }
     
     /**
@@ -66,62 +48,34 @@ class MaterialController extends AbstractFOSRestController
      */
     public function editAction(
         int $id,
-        EntityManagerInterface $em,
-        MaterialRepository $materialRepository,
-        MovimientoRepository $movimientoRepository,
-        Request $request,
-        FileUploader $fileUploader
+        MaterialManager $materialManager,
+        MaterialFormProcessor $materialFormProcessor,
+        Request $request
     ) {
-        $material = $materialRepository->find($id);
+        $material = $materialManager->find($id);
         if (!$material) {
-            throw $this->createNotFoundException('Material not found');
+            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
         }
+        [$material, $error] = ($materialFormProcessor)($material, $request);
+        $statusCode = $material ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
+        $data = $material ?? $error;
+        return View::create($data, $statusCode);
 
-        $materialDto = MaterialDto::createFromMaterial($material);
-        $originalMovimientos = new ArrayCollection();
-
-        foreach ($material->getMovimientos() as $movimiento) {
-            $movimientoDto = MovimientoDto::createFromMovimiento($movimiento);
-            $materialDto->movimientos[] = $movimientoDto;
-            $originalMovimientos->add($movimientoDto);
-        }
-
-        $form = $this->createForm(MaterialFormType::class, $materialDto);
-        $form->handleRequest($request);
-        if (!$form->isSubmitted()) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
-        if ($form->isValid()) {
-            // Remove movimientos
-            foreach ($originalMovimientos as $originalMovimientoDto) {
-                if (!in_array($originalMovimientoDto, $materialDto->movimientos)) {
-                    $movimiento = $movimientoRepository->find($originalMovimientoDto->id);
-                    $material->removeMovimiento($movimiento);
-                }
-            }
-
-            // Add movimientos
-            foreach ($materialDto->movimientos as $newMovimientoDto) {
-                if (!$originalMovimientos->contains($newMovimientoDto)) {
-                    $movimiento = $movimientoRepository->find($newMovimientoDto->id ?? 0);
-                    if (!$movimiento) {
-                        $movimiento = new Movimiento();
-                        $movimiento->setNombre($newMovimientoDto->nombre);
-                        $em->persist($movimiento);
-                    }
-                    $material->addMovimiento($movimiento);
-                }
-            }
-            $material->setNombre($materialDto->nombre);
-            if ($materialDto->base64Imagen) {
-                $filename = $fileUploader->uploadBase64File($materialDto->base64Imagen);
-                $material->setImagen($filename);
-            }
-            $em->persist($material);
-            $em->flush();
-            $em->refresh($material);
-            return $material;
-        }
-        return $form;
     }
+    /**
+     * @Rest\Delete(path="/material/{id}")
+     * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
+     */
+    public function deleteAction(
+        int $id,
+        MaterialManager $materialManager
+    ) {
+        $material = $materialManager->find($id);
+        if (!$material) {
+            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        }
+        $materialManager->delete($material);
+        return View::create(null, Response::HTTP_NO_CONTENT);
+    }
+
 }
