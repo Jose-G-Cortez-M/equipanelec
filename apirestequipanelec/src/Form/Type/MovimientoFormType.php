@@ -23,6 +23,7 @@ class MovimientoFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MovimientoDto::class,
+            'csrf_protection' => false
         ]);
     }
     public function getBlockPrefix()

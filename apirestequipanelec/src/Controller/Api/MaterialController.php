@@ -25,7 +25,7 @@ class MaterialController extends AbstractFOSRestController
         return $materialManager->getRepository()->findAll();
     }
     /**
-     * @Rest\Get(path="/material/{$id}", requirements={"id"="\d+"})
+     * @Rest\Get(path="/material/{id}", requirements={"id"="\d+"})
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function getSingleAction(

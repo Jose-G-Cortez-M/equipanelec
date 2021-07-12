@@ -28,6 +28,7 @@ class MaterialFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MaterialDto::class,
+            'csrf_protection' => false
         ]);
     }
 
