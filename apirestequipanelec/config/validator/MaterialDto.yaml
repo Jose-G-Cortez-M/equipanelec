@@ -1,0 +1,4 @@
+App\Form\Model\MaterialDto:
+    properties:
+        nombre:
+            - NotBlank: ~
