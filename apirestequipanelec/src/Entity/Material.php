@@ -38,6 +38,10 @@ class Material
         $this->movimientos = new ArrayCollection();
     }
 
+    public static function create(): self{
+        return new self();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

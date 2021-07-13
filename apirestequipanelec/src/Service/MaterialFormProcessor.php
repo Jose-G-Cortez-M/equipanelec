@@ -6,23 +6,25 @@ use App\Entity\Material;
 use App\Form\Model\MaterialDto;
 use App\Form\Model\MovimientoDto;
 use App\Form\Type\MaterialFormType;
+use App\Repository\MaterialRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 Class MaterialFormProcessor
 {
-    private $materialManager;
-    private $fileUploader;
-    private $formFactory;
+    private MaterialRepository $materialRepository;
+    private MovimientoManager $movimientoManager;
+    private FileUploader $fileUploader;
+    private FormFactoryInterface $formFactory;
 
     public function __construct(
-        MaterialManager $materialManager,
+        MaterialRepository $materialRepository,
         MovimientoManager $movimientoManager,
         FileUploader $fileUploader,
         FormFactoryInterface $formFactory
     ) {
-        $this->materialManager = $materialManager;
+        $this->materialRepository = $materialRepository;
         $this->movimientoManager = $movimientoManager;
         $this->fileUploader = $fileUploader;
         $this->formFactory = $formFactory;
@@ -31,6 +33,7 @@ Class MaterialFormProcessor
     public function __invoke(Material $material, Request $request)
     {
         $materialDto = MaterialDto::createFromMaterial($material);
+        /** @var MovimientoDto[]|ArrayCollection */
         $originalMovimientos = new ArrayCollection();
         foreach ($material->getMovimientos() as $movimiento) {
             $movimientoDto = MovimientoDto::createFromMovimiento($movimiento);
@@ -46,18 +49,21 @@ Class MaterialFormProcessor
             // Remove Movimientos
             foreach ($originalMovimientos as $originalMovimientoDto) {
                 if (!\in_array($originalMovimientoDto, $materialDto->movimientos)) {
-                    $movimiento = $this->movimientoManager->find($originalMovimientoDto->id);
+                    $movimiento = $this->movimientoManager->find($originalMovimientoDto->getId());
                     $material->removeMovimiento($movimiento);
                 }
             }
 
             // Add Movimientos
-            foreach ($materialDto->movimientos as $newMovimientoDto) {
+            foreach ($materialDto->getMovimientos() as $newMovimientoDto) {
                 if (!$originalMovimientos->contains($newMovimientoDto)) {
-                    $movimiento = $this->movimientoManager->find($newMovimientoDto->id ?? 0);
+                    $movimiento = null;
+                    if ($newMovimientoDto->getId() !== null) {
+                        $movimiento = $this->movimientoManager->find($newMovimientoDto->getId());
+                    }
                     if (!$movimiento) {
                         $movimiento = $this->movimientoManager->create();
-                        $movimiento->setNombre($newMovimientoDto->nombre);
+                        $movimiento->setNombre($newMovimientoDto->getNombre());
                         $this->movimientoManager->persist($movimiento);
                     }
                     $material->addMovimiento($movimiento);
@@ -68,8 +74,7 @@ Class MaterialFormProcessor
                 $filename = $this->fileUploader->uploadBase64File($materialDto->base64Imagen);
                 $material->setImagen($filename);
             }
-            $this->materialManager->save($material);
-            $this->materialManager->reload($material);
+            $this->materialRepository->save($material);
             return [$material, null];
         }
         return [null, $form];

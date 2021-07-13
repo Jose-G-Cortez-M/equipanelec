@@ -5,9 +5,10 @@ namespace App\Form\Model;
 use App\Entity\Material;
 
 class MaterialDto {
-    public $nombre;
-    public $base64Imagen;
-    public $movimientos;
+    public ?string $nombre = null;
+    public ?string $base64Imagen = null;
+    /** @var \App\Form\Model\MovimientoDto[]|null */
+    public ?array $movimientos = [];
 
     public function __construct()
     {
@@ -19,5 +20,25 @@ class MaterialDto {
         $dto = new self();
         $dto->nombre = $material->getNombre();
         return $dto;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+
+    public function getBase64Imagen(): ?string
+    {
+        return $this->base64Imagen;
+    }
+
+    /** 
+     * @return \App\Form\Model\MovimientoDto[]|null 
+     */
+
+    public function getMovimientos(): ?array
+    {
+        return $this->movimientos;
     }
 }

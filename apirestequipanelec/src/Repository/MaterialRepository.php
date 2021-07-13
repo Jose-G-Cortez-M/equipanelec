@@ -20,32 +20,23 @@ class MaterialRepository extends ServiceEntityRepository
         parent::__construct($registry, Material::class);
     }
 
-    // /**
-    //  * @return Material[] Returns an array of Material objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save(Material $material): Material
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->getEntityManager()->persist($material);
+        $this->getEntityManager()->flush();
+        return $material;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Material
+    public function reload(Material $material): Material
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $this->getEntityManager()->refresh($material);
+        return $material;
     }
-    */
+
+    public function delete(Material $material)
+    {
+        $this->getEntityManager()->remove($material);
+        $this->getEntityManager()->flush();
+    }
+ 
 }

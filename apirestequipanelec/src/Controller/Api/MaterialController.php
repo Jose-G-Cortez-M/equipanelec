@@ -3,15 +3,17 @@
 
 namespace App\Controller\Api;
 
-
+use App\Entity\Material;
+use App\Repository\MaterialRepository;
+use App\Service\Material\DeleteMaterial;
+use App\Service\Material\GetMaterial;
 use FOS\RestBundle\View\View;
-use App\Service\MaterialManager;
 use App\Service\MaterialFormProcessor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-
+use Throwable;
 
 class MaterialController extends AbstractFOSRestController
 {
@@ -20,9 +22,9 @@ class MaterialController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function getAction(
-        MaterialManager $materialManager
+        MaterialRepository $materialRepository
     ) {
-        return $materialManager->getRepository()->findAll();
+        return $materialRepository->findAll();
     }
     /**
      * @Rest\Get(path="/material/{id}", requirements={"id"="\d+"})
@@ -30,9 +32,10 @@ class MaterialController extends AbstractFOSRestController
      */
     public function getSingleAction(
         int $id,
-        MaterialManager $materialManager
+        GetMaterial $getMaterial
     ) {
-        $material = $materialManager->find($id);
+
+        $material = ($getMaterial)($id);
         if(!$material){
             return View::create('Material no Encontrado', Response::HTTP_BAD_REQUEST);
         }
@@ -44,11 +47,10 @@ class MaterialController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function postAction(
-        MaterialManager $materialManager,
         MaterialFormProcessor $materialFormProcessor,
         Request $request
     ) {
-        $material = $materialManager->create();
+        $material = Material::create();
         [$material, $error] = ($materialFormProcessor)($material, $request);
         $statusCode = $material ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
         $data = $material ?? $error;
@@ -61,11 +63,11 @@ class MaterialController extends AbstractFOSRestController
      */
     public function editAction(
         int $id,
-        MaterialManager $materialManager,
+        GetMaterial $getMaterial,
         MaterialFormProcessor $materialFormProcessor,
         Request $request
     ) {
-        $material = $materialManager->find($id);
+        $material = ($getMaterial)($id);
         if (!$material) {
             return View::create('Book not found', Response::HTTP_BAD_REQUEST);
         }
@@ -81,13 +83,13 @@ class MaterialController extends AbstractFOSRestController
      */
     public function deleteAction(
         int $id,
-        MaterialManager $materialManager
+        DeleteMaterial $deleteMaterial
     ) {
-        $material = $materialManager->find($id);
-        if (!$material) {
-            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        try{
+            ($deleteMaterial)($id);
+        } catch (Throwable $t){
+            return View::create('Material no encontrado', Response::HTTP_BAD_REQUEST);
         }
-        $materialManager->delete($material);
         return View::create(null, Response::HTTP_NO_CONTENT);
     }
 
