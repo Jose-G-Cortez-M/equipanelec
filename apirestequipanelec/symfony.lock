@@ -131,6 +131,18 @@
     "phpdocumentor/type-resolver": {
         "version": "1.4.0"
     },
+    "phpstan/extension-installer": {
+        "version": "1.1.0"
+    },
+    "phpstan/phpstan": {
+        "version": "0.12.92"
+    },
+    "phpstan/phpstan-doctrine": {
+        "version": "0.12.42"
+    },
+    "phpstan/phpstan-symfony": {
+        "version": "0.12.38"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -264,6 +276,21 @@
     "symfony/password-hasher": {
         "version": "v5.3.3"
     },
+    "symfony/phpunit-bridge": {
+        "version": "5.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.3",
+            "ref": "905679249e7b10f06c572917a9022a72cbfedc04"
+        },
+        "files": [
+            ".env.test",
+            "bin/phpunit",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php"
+        ]
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.23.0"
     },
@@ -371,6 +398,9 @@
     },
     "symfony/yaml": {
         "version": "v5.3.3"
+    },
+    "symplify/easy-coding-standard": {
+        "version": "9.4.22"
     },
     "twig/extra-bundle": {
         "version": "v3.3.1"

@@ -45,7 +45,7 @@ Class MaterialFormProcessor
         if ($form->isValid()) {
             // Remove Movimientos
             foreach ($originalMovimientos as $originalMovimientoDto) {
-                if (!in_array($originalMovimientoDto, $materialDto->movimientos)) {
+                if (!\in_array($originalMovimientoDto, $materialDto->movimientos)) {
                     $movimiento = $this->movimientoManager->find($originalMovimientoDto->id);
                     $material->removeMovimiento($movimiento);
                 }
