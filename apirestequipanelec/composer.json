@@ -15,6 +15,7 @@
         "friendsofsymfony/rest-bundle": "^3.0",
         "league/flysystem-bundle": "^2.0",
         "phpdocumentor/reflection-docblock": "^5.2",
+        "phpstan/phpstan-doctrine": "^0.12.42",
         "sensio/framework-extra-bundle": "^6.1",
         "symfony/console": "5.3.*",
         "symfony/dotenv": "5.3.*",
@@ -25,6 +26,7 @@
         "symfony/property-info": "5.3.*",
         "symfony/proxy-manager-bridge": "5.3.*",
         "symfony/runtime": "5.3.*",
+        "symfony/security-bundle": "5.3.*",
         "symfony/serializer": "5.3.*",
         "symfony/twig-bundle": "5.3.*",
         "symfony/validator": "5.3.*",
@@ -64,6 +66,15 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "cs": [
+            "vendor/bin/ecs check --ansi --no-interaction"
+        ],
+        "stan": [
+            "vendor/bin/phpstan analyse --ansi --no-interaction"
+        ],
+        "cs-fix": [
+            "vendor/bin/ecs check --fix --ansi --no-interaction"
         ]
     },
     "conflict": {
@@ -76,6 +87,11 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.33"
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^0.12.92",
+        "phpstan/phpstan-symfony": "^0.12.38",
+        "symfony/maker-bundle": "^1.33",
+        "symfony/phpunit-bridge": "^5.3",
+        "symplify/easy-coding-standard": "^9.4"
     }
 }
