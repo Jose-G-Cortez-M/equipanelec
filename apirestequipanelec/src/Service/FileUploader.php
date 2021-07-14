@@ -2,13 +2,13 @@
 
 namespace App\Service;
 
-use League\Flysystem\FilesystemOperator;
+use League\Flysystem\FilesystemInterface;
 
 class FileUploader
 {
     private $defaultStorage;
 
-    public function __construct(FilesystemOperator $defaultStorage)
+    public function __construct(FilesystemInterface $defaultStorage)
     {
         $this->defaultStorage = $defaultStorage;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class User implements UserInterface
@@ -12,7 +11,9 @@ class User implements UserInterface
     private $roles = [];
 
     /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
      */
     public function getUsername(): string
     {
@@ -24,16 +25,6 @@ class User implements UserInterface
         $this->username = $username;
 
         return $this;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->username;
     }
 
     /**
@@ -56,23 +47,19 @@ class User implements UserInterface
     }
 
     /**
-     * This method can be removed in Symfony 6.0 - is not needed for apps that do not check user passwords.
-     *
-     * @see PasswordAuthenticatedUserInterface
+     * @see UserInterface
      */
-    public function getPassword(): ?string
+    public function getPassword()
     {
-        return null;
+        // not needed for apps that do not check user passwords
     }
 
     /**
-     * This method can be removed in Symfony 6.0 - is not needed for apps that do not check user passwords.
-     *
      * @see UserInterface
      */
-    public function getSalt(): ?string
+    public function getSalt()
     {
-        return null;
+        // not needed for apps that do not check user passwords
     }
 
     /**

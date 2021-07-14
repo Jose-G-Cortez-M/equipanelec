@@ -3,7 +3,6 @@
 use PhpCsFixer\Fixer\ArrayNotation\ArraySyntaxFixer;
 use PhpCsFixer\Fixer\FunctionNotation\MethodArgumentSpaceFixer;
 use PhpCsFixer\Fixer\FunctionNotation\NativeFunctionInvocationFixer;
-use PhpCsFixer\Fixer\Import\NoUnusedImportsFixer;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symplify\EasyCodingStandard\ValueObject\Option;
 
@@ -13,28 +12,22 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->call('configure', [[
             'syntax' => 'short',
         ]]);
-        //Identación de líneas 
     $services->set(MethodArgumentSpaceFixer::class)
         ->call('configure', [[
             'on_multiline' => 'ensure_fully_multiline',
         ]]);
-
-        //optimización de líneas de código
     $services->set(NativeFunctionInvocationFixer::class)
         ->call('configure', [[
             'scope' => 'namespaced',
             'include' => ['@compiler_optimized']
         ]]);
-    $services->set(NoUnusedImportsFixer::class);
+
     $parameters = $containerConfigurator->parameters();
     $parameters->set(Option::PATHS, [__DIR__ . '/src']);
 
-    //parametros para omitir en la revisión
-    /*
     $parameters->set(Option::SKIP, [
         // skip paths with legacy code
         __DIR__ . '/src/Migrations',
         __DIR__ . '/tests'
     ]);
-    */
 };

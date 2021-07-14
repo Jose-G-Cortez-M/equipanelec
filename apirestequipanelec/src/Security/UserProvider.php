@@ -3,7 +3,7 @@
 namespace App\Security;
 
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -17,23 +17,17 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
      * If you're not using these features, you do not need to implement
      * this method.
      *
-     * @throws UserNotFoundException if the user is not found
+     * @return UserInterface
+     *
+     * @throws UsernameNotFoundException if the user is not found
      */
-    public function loadUserByIdentifier($identifier): UserInterface
+    public function loadUserByUsername($username)
     {
-        // Load a User object from your data source or throw UserNotFoundException.
-        // The $identifier argument may not actually be a username:
-        // it is whatever value is being returned by the getUserIdentifier()
+        // Load a User object from your data source or throw UsernameNotFoundException.
+        // The $username argument may not actually be a username:
+        // it is whatever value is being returned by the getUsername()
         // method in your User class.
-        throw new \Exception('TODO: fill in loadUserByIdentifier() inside '.__FILE__);
-    }
-
-    /**
-     * @deprecated since Symfony 5.3, loadUserByIdentifier() is used instead
-     */
-    public function loadUserByUsername($username): UserInterface
-    {
-        return $this->loadUserByIdentifier($username);
+        throw new \Exception('TODO: fill in loadUserByUsername() inside '.__FILE__);
     }
 
     /**
@@ -52,10 +46,10 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
     public function refreshUser(UserInterface $user)
     {
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
+            throw new UnsupportedUserException(sprintf('Invalid user class "%s".', \get_class($user)));
         }
         return new User();
-        
+
         // Return a User object after making sure its data is "fresh".
         // Or throw a UsernameNotFoundException if the user no longer exists.
         throw new \Exception('TODO: fill in refreshUser() inside '.__FILE__);
@@ -66,16 +60,16 @@ class UserProvider implements UserProviderInterface, PasswordUpgraderInterface
      */
     public function supportsClass($class)
     {
-        return User::class === $class || is_subclass_of($class, User::class);
+        return User::class === $class;
     }
 
     /**
-     * Upgrades the hashed password of a user, typically for using a better hash algorithm.
+     * Upgrades the encoded password of a user, typically for using a better hash algorithm.
      */
-    public function upgradePassword(UserInterface $user, string $newHashedPassword): void
+    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
     {
-        // TODO: when hashed passwords are in use, this method should:
+        // TODO: when encoded passwords are in use, this method should:
         // 1. persist the new password in the user storage
-        // 2. update the $user object with $user->setPassword($newHashedPassword);
+        // 2. update the $user object with $user->setPassword($newEncodedPassword);
     }
 }
