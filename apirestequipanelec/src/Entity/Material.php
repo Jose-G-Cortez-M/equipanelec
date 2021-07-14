@@ -2,43 +2,25 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Ramsey\Uuid\UuidInterface;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @ORM\Entity(repositoryClass=MaterialRepository::class)
- */
+
 class Material
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    private UuidInterface $id;
     private $nombre;
-
-    /**
-     * @ORM\Column(type="string", length=512, nullable=true)
-     */
     private $imagen;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Movimiento::class, inversedBy="materials")
-     */
     private $movimientos;
 
-    public function __construct()
+    public function __construct(UuidInterface $uuid)
     {
+        $this->id = $uuid;
         $this->movimientos = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -86,8 +68,10 @@ class Material
 
     public function removeMovimiento(Movimiento $movimiento): self
     {
-        $this->movimientos->removeElement($movimiento);
 
+        if ($this->movimientos->contains($movimiento)) {
+            $this->movimientos->removeElement($movimiento);
+        }
         return $this;
     }
 }

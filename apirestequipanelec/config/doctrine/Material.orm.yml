@@ -1,0 +1,43 @@
+App\Entity\Material:
+    type: entity
+    table: material
+    repositoryClass: App\Entity\MaterialRepository
+    id:
+        id:
+            type: uuid
+    fields:
+        nombre:
+            type: string
+            scale: 0
+            length: 255
+            unique: false
+            nullable: false
+            precision: 0
+        imagen:
+            type: string
+            scale: 0
+            length: 512
+            unique: false
+            nullable: true
+            precision: 0
+    manyToMany:
+        movimientos:
+            targetEntity: App\Entity\Movimiento
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: materials
+            joinTable:
+                name: material_movimiento
+                joinColumns:
+                    -
+                        name: material_id
+                        referencedColumnName: id
+                        onDelete: CASCADE
+                inverseJoinColumns:
+                    -
+                        name: movimiento_id
+                        referencedColumnName: id
+                        onDelete: CASCADE
+            orderBy: null
+    lifecycleCallbacks: {  }

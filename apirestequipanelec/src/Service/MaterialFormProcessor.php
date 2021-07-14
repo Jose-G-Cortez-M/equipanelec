@@ -9,6 +9,7 @@ use App\Form\Type\MaterialFormType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Ramsey\Uuid\Uuid;
 
 Class MaterialFormProcessor
 {
@@ -43,10 +44,10 @@ Class MaterialFormProcessor
             return [null, 'Form is not submitted'];
         }
         if ($form->isValid()) {
-            // Remove Movimientos
+            // Remove movimientos
             foreach ($originalMovimientos as $originalMovimientoDto) {
                 if (!\in_array($originalMovimientoDto, $materialDto->movimientos)) {
-                    $movimiento = $this->movimientoManager->find($originalMovimientoDto->id);
+                    $movimiento = $this->MovimeintoManager->find(Uuid::fromString($originalMovimientoDto->id));
                     $material->removeMovimiento($movimiento);
                 }
             }
@@ -54,8 +55,8 @@ Class MaterialFormProcessor
             // Add Movimientos
             foreach ($materialDto->movimientos as $newMovimientoDto) {
                 if (!$originalMovimientos->contains($newMovimientoDto)) {
-                    $movimiento = $this->movimientoManager->find($newMovimientoDto->id ?? 0);
-                    if (!$movimiento) {
+                    $movimiento = null;
+                    if ($newMovimientoDto->id !== null) {
                         $movimiento = $this->movimientoManager->create();
                         $movimiento->setNombre($newMovimientoDto->nombre);
                         $this->movimientoManager->persist($movimiento);

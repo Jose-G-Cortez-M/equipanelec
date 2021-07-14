@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Ramsey\Uuid\Uuid;
 
 
 class MaterialController extends AbstractFOSRestController
@@ -25,14 +26,14 @@ class MaterialController extends AbstractFOSRestController
         return $materialManager->getRepository()->findAll();
     }
     /**
-     * @Rest\Get(path="/material/{id}", requirements={"id"="\d+"})
+     * @Rest\Get(path="/material/{id}")
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function getSingleAction(
-        int $id,
+        string $id,
         MaterialManager $materialManager
     ) {
-        $material = $materialManager->find($id);
+        $material = $materialManager->find(Uuid::fromString($id));
         if(!$material){
             return View::create('Material no Encontrado', Response::HTTP_BAD_REQUEST);
         }
@@ -56,16 +57,16 @@ class MaterialController extends AbstractFOSRestController
     }
     
     /**
-     * @Rest\Post(path="/material/{id}", requirements={"id"="\d+"})
+     * @Rest\Post(path="/material/{id}")
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function editAction(
-        int $id,
+        string $id,
         MaterialManager $materialManager,
         MaterialFormProcessor $materialFormProcessor,
         Request $request
     ) {
-        $material = $materialManager->find($id);
+        $material = $materialManager->find(Uuid::fromString($id));
         if (!$material) {
             return View::create('Book not found', Response::HTTP_BAD_REQUEST);
         }
@@ -76,14 +77,14 @@ class MaterialController extends AbstractFOSRestController
 
     }
     /**
-     * @Rest\Delete(path="/material/{id}", requirements={"id"="\d+"})
+     * @Rest\Delete(path="/material/{id}")
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function deleteAction(
-        int $id,
+        string $id,
         MaterialManager $materialManager
     ) {
-        $material = $materialManager->find($id);
+        $material = $materialManager->find(Uuid::fromString($id));
         if (!$material) {
             return View::create('Book not found', Response::HTTP_BAD_REQUEST);
         }

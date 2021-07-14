@@ -1,0 +1,25 @@
+App\Entity\Movimiento:
+    type: entity
+    table: movimiento
+    repositoryClass: App\Entity\MovimientoRepository
+    id:
+        id:
+            type: uuid
+    fields:
+        nombre:
+            type: string
+            scale: 0
+            length: 255
+            unique: false
+            nullable: false
+            precision: 0
+    manyToMany:
+        materials:
+            targetEntity: App\Entity\Material
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: movimientos
+            inversedBy: null
+            joinTable: {  }
+            orderBy: null
+    lifecycleCallbacks: {  }

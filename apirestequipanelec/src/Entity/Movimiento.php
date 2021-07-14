@@ -2,38 +2,25 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Ramsey\Uuid\UuidInterface;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @ORM\Entity(repositoryClass=MovimientoRepository::class)
- */
+
 class Movimiento
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    private UuidInterface $id;
     private $nombre;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Material::class, mappedBy="movimientos")
-     */
     private $materials;
 
-    public function __construct()
+    public function __construct(UuidInterface $uuid)
     {
+        $this->id = $uuid;
         $this->materials = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
@@ -53,7 +40,7 @@ class Movimiento
     /**
      * @return Collection|Material[]
      */
-    public function getMaterials(): Collection
+    public function getmaterials(): Collection
     {
         return $this->materials;
     }

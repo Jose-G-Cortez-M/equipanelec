@@ -5,7 +5,8 @@ namespace App\Service;
 use App\Entity\Material;
 use App\Repository\MaterialRepository;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 class MaterialManager
 {
 
@@ -18,7 +19,7 @@ class MaterialManager
         $this->materialRepository = $materialRepository;
     }
 
-    public function find(int $id): ?Material
+    public function find(UuidInterface $id): ?Material
     {
         return $this->materialRepository->find($id);
     }
@@ -30,7 +31,7 @@ class MaterialManager
 
     public function create(): Material
     {
-        $material = new Material();
+        $material = new Material(Uuid::uuid4());
         return $material;
     }
 

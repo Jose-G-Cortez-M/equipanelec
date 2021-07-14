@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Movimiento;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use App\Repository\MovimientoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -18,7 +20,7 @@ class MovimientoManager
         $this->movimientoRepository = $movimientoRepository;
     }
 
-    public function find(int $id): ?Movimiento
+    public function find(UuidInterface $id): ?Movimiento
     {
         return $this->movimientoRepository->find($id);
     }
@@ -30,7 +32,7 @@ class MovimientoManager
 
     public function create(): Movimiento
     {
-        $movimiento = new Movimiento();
+        $movimiento = new Movimiento(Uuid::uuid4());
         return $movimiento;
     }
 
