@@ -19,32 +19,22 @@ class MovimientoRepository extends ServiceEntityRepository
         parent::__construct($registry, Movimiento::class);
     }
 
-    // /**
-    //  * @return Movimiento[] Returns an array of Movimiento objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save(Movimiento $movimiento): Movimiento
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->getEntityManager()->persist($movimiento);
+        $this->getEntityManager()->flush();
+        return $movimiento;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Movimiento
+    public function reload(Movimiento $movimiento): Movimiento
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $this->getEntityManager()->refresh($movimiento);
+        return $movimiento;
     }
-    */
+
+    public function delete(Movimiento $movimiento)
+    {
+        $this->getEntityManager()->remove($movimiento);
+        $this->getEntityManager()->flush();
+    }
 }

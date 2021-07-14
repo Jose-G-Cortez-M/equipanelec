@@ -1,17 +1,18 @@
 <?php
 
-
 namespace App\Controller\Api;
 
-
+use Exception;
+use Throwable;
 use FOS\RestBundle\View\View;
-use App\Service\MaterialManager;
-use App\Service\MaterialFormProcessor;
+use App\Service\Material\GetMaterial;
+use App\Repository\MaterialRepository;
+use App\Service\Material\DeleteMaterial;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\Material\MaterialFormProcessor;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Ramsey\Uuid\Uuid;
 
 
 class MaterialController extends AbstractFOSRestController
@@ -21,9 +22,9 @@ class MaterialController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function getAction(
-        MaterialManager $materialManager
+        MaterialRepository $materialRepository
     ) {
-        return $materialManager->getRepository()->findAll();
+        return $materialRepository->findAll();
     }
     /**
      * @Rest\Get(path="/material/{id}")
@@ -31,11 +32,12 @@ class MaterialController extends AbstractFOSRestController
      */
     public function getSingleAction(
         string $id,
-        MaterialManager $materialManager
+        GetMaterial $getMaterial
     ) {
-        $material = $materialManager->find(Uuid::fromString($id));
-        if(!$material){
-            return View::create('Material no Encontrado', Response::HTTP_BAD_REQUEST);
+        try {
+            $material = ($getMaterial)($id);
+        } catch (Exception $exception) {
+            return View::create('Material no encontrado', Response::HTTP_BAD_REQUEST);
         }
         return $material;
     }
@@ -45,12 +47,10 @@ class MaterialController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function postAction(
-        MaterialManager $materialManager,
         MaterialFormProcessor $materialFormProcessor,
         Request $request
     ) {
-        $material = $materialManager->create();
-        [$material, $error] = ($materialFormProcessor)($material, $request);
+        [$material, $error] = ($materialFormProcessor)($request);
         $statusCode = $material ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
         $data = $material ?? $error;
         return View::create($data, $statusCode);
@@ -62,19 +62,17 @@ class MaterialController extends AbstractFOSRestController
      */
     public function editAction(
         string $id,
-        MaterialManager $materialManager,
         MaterialFormProcessor $materialFormProcessor,
         Request $request
     ) {
-        $material = $materialManager->find(Uuid::fromString($id));
-        if (!$material) {
-            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        try {
+            [$material, $error] = ($materialFormProcessor)($request, $id);
+            $statusCode = $material ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
+            $data = $material ?? $error;
+            return View::create($data, $statusCode);
+        } catch (Throwable $t) {
+            return View::create('Material no encontrado', Response::HTTP_BAD_REQUEST);
         }
-        [$material, $error] = ($materialFormProcessor)($material, $request);
-        $statusCode = $material ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
-        $data = $material ?? $error;
-        return View::create($data, $statusCode);
-
     }
     /**
      * @Rest\Delete(path="/material/{id}")
@@ -82,13 +80,14 @@ class MaterialController extends AbstractFOSRestController
      */
     public function deleteAction(
         string $id,
-        MaterialManager $materialManager
+        GetMaterial $getMaterial,
+        DeleteMaterial $deleteMaterial
     ) {
-        $material = $materialManager->find(Uuid::fromString($id));
-        if (!$material) {
-            return View::create('Book not found', Response::HTTP_BAD_REQUEST);
+        try {
+            ($deleteMaterial)($id);
+        } catch (Throwable $t) {
+            return View::create('Material no Encontrado', Response::HTTP_BAD_REQUEST);
         }
-        $materialManager->delete($material);
         return View::create(null, Response::HTTP_NO_CONTENT);
     }
 

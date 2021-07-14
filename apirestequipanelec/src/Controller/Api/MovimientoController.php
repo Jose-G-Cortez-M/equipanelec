@@ -2,10 +2,11 @@
 
 namespace App\Controller\Api;
 
-use App\Form\Model\MovimientoDto;
-use App\Service\MovimientoManager;
-use App\Form\Type\MovimientoFormType;
+use FOS\RestBundle\View\View;
+use App\Repository\MovimientoRepository;
+use App\Service\Movimiento\MovimientoFormProcessor;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 
@@ -16,9 +17,9 @@ class MovimientoController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"material"}, serializerEnableMaxDepthChecks=true)
      */
     public function getAction(
-        MovimientoManager $movimientoManager
+        MovimientoRepository $movimientoRepository
     ) {
-        return $movimientoManager->getRepository()->findAll();
+        return $movimientoRepository->findAll();
     }
        /**
      * @Rest\Post(path="/movimientos")
@@ -26,18 +27,12 @@ class MovimientoController extends AbstractFOSRestController
      */
     public function postAction(
         Request $request,
-        MovimientoManager $movimientoManager
+        MovimientoFormProcessor $movimientoFormProcessor
     ) {
-        $movimientoDto = new MovimientoDto();
-        $form = $this->createForm(MovimientoFormType::class, $movimientoDto);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $movimiento = $movimientoManager->create();
-            $movimiento->setNombre($movimientoDto->nombre);
-            $movimientoManager->save($movimiento);
-            return $movimiento;
-        }
-        return $form;
+        [$movimiento, $error] = ($movimientoFormProcessor)($request);
+        $statusCode = $movimiento ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST;
+        $data = $movimiento ?? $error;
+        return View::create($data, $statusCode);
     }
     
 }

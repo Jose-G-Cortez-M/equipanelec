@@ -5,6 +5,8 @@ namespace App\Entity;
 use Ramsey\Uuid\UuidInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Ramsey\Uuid\Uuid;
+
 
 
 class Movimiento
@@ -14,10 +16,15 @@ class Movimiento
     private $nombre;
     private $materials;
 
-    public function __construct(UuidInterface $uuid)
+    public function __construct(UuidInterface $uuid, string $nombre)
     {
         $this->id = $uuid;
+        $this->nombre = $nombre;
         $this->materials = new ArrayCollection();
+    }
+    public static function create(string $name): self
+    {
+        return new self(Uuid::uuid4(), $name);
     }
 
     public function getId(): ?UuidInterface
@@ -57,7 +64,8 @@ class Movimiento
 
     public function removeMaterial(Material $material): self
     {
-        if ($this->materials->removeElement($material)) {
+        if ($this->materials->contains($material)) {
+            $this->materials->removeElement($material);
             $material->removeMovimiento($this);
         }
 

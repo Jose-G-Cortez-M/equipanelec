@@ -3,10 +3,12 @@
 namespace App\Form\Model;
 
 use App\Entity\Movimiento;
+use Ramsey\Uuid\UuidInterface;
 
 class MovimientoDto {
-    public $id;
-    public $nombre;
+    
+    public ?UuidInterface $id = null;
+    public ?string $nombre = null;
 
     public static function createFromMovimiento(Movimiento $movimiento): self
     {
@@ -16,4 +18,14 @@ class MovimientoDto {
         return $dto;
     }
 
+
+    public function getId(): ?UuidInterface
+    {
+        return $this->id;
+    }
+
+    public function getNombre(): string
+    {
+        return $this->nombre;
+    }
 }

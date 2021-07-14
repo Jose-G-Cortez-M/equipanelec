@@ -32,7 +32,6 @@ class MaterialFormType extends AbstractType
         ]);
     }
 
-    //funciones para no especificar el formulario dentro de el json
     public function getBlockPrefix()
     {
         return '';

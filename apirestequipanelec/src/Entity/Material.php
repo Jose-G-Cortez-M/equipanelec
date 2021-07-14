@@ -5,7 +5,7 @@ namespace App\Entity;
 use Ramsey\Uuid\UuidInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Ramsey\Uuid\Uuid;
 
 class Material
 {
@@ -18,6 +18,11 @@ class Material
     {
         $this->id = $uuid;
         $this->movimientos = new ArrayCollection();
+    }
+
+    public static function create(): self
+    {
+        return new self(Uuid::uuid4());
     }
 
     public function getId(): UuidInterface

@@ -4,9 +4,11 @@ namespace App\Form\Type;
 
 use App\Form\Model\MovimientoDto;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Ramsey\Uuid\Uuid;
 
 class MovimientoFormType extends AbstractType
 {
@@ -15,6 +17,17 @@ class MovimientoFormType extends AbstractType
         $builder
             ->add('id', TextType::class)
             ->add('nombre', TextType::class);
+            $builder->get('id')->addModelTransformer(new CallbackTransformer(
+                function ($id) {
+                    if ($id === null) {
+                        return '';
+                    }
+                    return $id->toString();
+                },
+                function ($id) {
+                    return $id === null ? null : Uuid::fromString($id);
+                }
+            ));
 
     }
 
