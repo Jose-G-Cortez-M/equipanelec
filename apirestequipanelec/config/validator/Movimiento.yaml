@@ -1,4 +1,0 @@
-App\Form\Model\MovimientoDto:
-    properties:
-        nombre:
-            - NotBlank: ~

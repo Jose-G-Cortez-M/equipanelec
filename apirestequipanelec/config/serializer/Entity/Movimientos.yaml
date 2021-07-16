@@ -1,6 +1,0 @@
-App\Entity\Movimiento:
-    attributes:
-        id:
-            groups: ['material']
-        nombre:
-            groups: ['material']
