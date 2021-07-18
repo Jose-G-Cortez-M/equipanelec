@@ -24,5 +24,11 @@ class User
     protected ?string $sueldo;
 
 
+    public function __construct(string $nombre,string $email,string $id = null)
+    {
+        $this->nombre = $nombre;
+        $this->email = $email;
+        $this->id = $id;
+    }
 
 }
