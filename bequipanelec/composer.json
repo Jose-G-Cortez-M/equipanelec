@@ -1,8 +1,10 @@
 {
+    "name": "jose-g-cortez-m/bequipanelec",
+    "description": "Symfony 5 with PHP 7.4 and API Plataform",
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "5.0.*",
